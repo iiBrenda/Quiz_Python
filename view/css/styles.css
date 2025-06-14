@@ -1,0 +1,65 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+}
+header {
+    background: #6a5acd;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
+.button {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #fff;
+    color: #6a5acd;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+main {
+    padding: 2rem;
+}
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.quiz-container {
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+/* Estilização para a linha tracejada */
+.quiz-header {
+    border-bottom: 2px dashed var(--python-blue);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Espaçamento para a área de perguntas */
+.question {
+    min-height: 100px;
+    margin: 2rem 0;
+}
+
+/* Container de opções */
+.options {
+    min-height: 200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Feedback visível */
+.feedback {
+    min-height: 50px;
+}
