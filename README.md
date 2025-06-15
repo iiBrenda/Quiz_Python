@@ -20,9 +20,9 @@ Este projeto é um jogo de perguntas e respostas sobre a linguagem Python, desen
 ## Acesse a pasta do projeto:
    - cd (endereço do projeto)
 ## Execute o quiz:
-   - python -m http.server 8000
+   - python route.py
    - ou
-   - py -m http.server 8000
+   - py route.py
 ## 🛠️ Tecnologias Utilizadas
 - Python 3.13
 
