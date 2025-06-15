@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Python | Teste Seu Conhecimento</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap">
+    <style>
+        :root {
+            --python-blue: #3776AB;
+            --python-yellow: #FFD43B;
+            --python-dark: #2C3E50;
+            --python-light: #F8F9FA;
+            --correct: #4CAF50;
+            --incorrect: #F44336;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            padding: 0;
+            background: var(--python-light);
+            color: var(--python-dark);
+            min-height: 100vh;
+        }
+        
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px dashed var(--python-blue);
+        }
+        
+        .python-logo {
+            height: 80px;
+            margin-right: 1.5rem;
+        }
+        
+        .quiz-info {
+            flex-grow: 1;
+        }
+        
+        .quiz-title {
+            color: var(--python-blue);
+            margin: 0;
+        }
+        
+        .quiz-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat {
+            background: var(--python-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            margin: 2rem 0;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option {
+            padding: 1rem;
+            background: var(--python-light);
+            border: 2px solid var(--python-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: #E1E9F2;
+            transform: translateY(-3px);
+        }
+        
+        .option.selected {
+            background: var(--python-blue);
+            color: white;
+            border-color: var(--python-dark);
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Roboto Mono', monospace;
+            transition: all 0.3s;
+        }
+        
+        .btn-hint {
+            background: var(--python-yellow);
+            color: var(--python-dark);
+        }
+        
+        .btn-hint:hover {
+            background: #FFE873;
+        }
+        
+        .btn-submit {
+            background: var(--python-blue);
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #4584B6;
+        }
+        
+        .feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .feedback.correct {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--correct);
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect);
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .python-logo {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <img src="/static/images/python-logo.png" alt="Python Logo" class="python-logo">
+            <div class="quiz-info">
+                <h1 class="quiz-title">Python Quiz</h1>
+                <div class="quiz-stats">
+                    <span id="progress" class="stat">Pergunta 1/8</span>
+                    <span id="score" class="stat">Pontuação: 0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div id="feedback" class="feedback"></div>
+        <div class="quiz-controls">
+            <button id="hintBtn" class="btn btn-hint">Dica</button>
+            <button id="submitBtn" class="btn btn-submit">Responder</button>
+        </div>
+    </div>
+
+    <script>
+        // ============== PERGUNTAS ==============
+        const questions = [
+            {
+                id: 1,
+                question: "O que o 'input()' faz?",
+                options: ["Faz uma pergunta ao usuário", "Quebra uma linha", "Mostra um número aleatório", "Imprime uma saída"],
+                answer: "Faz uma pergunta ao usuário",
+                hint: "O 'input()' faz uma pergunta"
+            },
+            {
+                id: 2,
+                question: "Como criar uma variável x com valor 7?",
+                options: ["x = {variável, 7}", "create = x = 7", "x = 7", "x == 7"],
+                answer: "x = 7",
+                hint: "Atribuição direta com ="
+            },
+            {
+                id: 3,
+                question: "Qual destes NÃO é um tipo de dado básico em Python?",
+                options: ["int", "str", "real", "tuple"],
+                answer: "real",
+                hint: "Python tem 'float' para números reais, não 'real'"
+            },
+            {
+                id: 4,
+                question: "Como se cria uma lista em Python?",
+                options: ["lista = []", "lista = lista", "lista = {}", "Ambos A e B estão corretos"],
+                answer: "lista = []",
+                hint: "Listas podem ser criadas com []"
+            },
+            { 
+                id: 5,
+                question: "Como posso retornar 'Quiz python'",
+                options: ["x = Quiz python", "for quiz in python", "print(Quiz python)", "printf(Quiz python)"],
+                answer: "print(Quiz python)",
+                hint: "Para retornar usamos o print"
+            },
+            {
+                id: 6,
+                question: "Qual é a forma correta de criar uma função em Python?",
+                options: [
+                    "function minhaFuncao():",
+                    "def minhaFuncao():",
+                    "create function minhaFuncao()",
+                    "função minhaFuncao():"
+                ],
+                answer: "def minhaFuncao():",
+                hint: "Em Python, funções são definidas com a palavra-chave 'def'"
+            },
+            {
+                id: 7,
+                question: "Como comentar uma linha em Python?",
+                options: [
+                    "// Comentário",
+                    "/* Comentário */",
+                    "# Comentário",
+                    "-- Comentário"
+                ],
+                answer: "# Comentário",
+                hint: "Python usa o símbolo # para comentários de linha única"
+            },
+            {
+                id: 8,
+                question: "Qual método retorna o número de itens em uma lista?",
+                options: [
+                    ".count()",
+                    ".size()",
+                    ".length()",
+                    ".len()"
+                ],
+                answer: ".count()",
+                hint: "O método .count() retorna o número de elementos específicos na lista"
+            }
+        ];
+
+        // ============== LÓGICA DO QUIZ ==============
+        const QuizView = {
+            showQuestion(question) {
+                document.getElementById('question').textContent = question.question;
+                const optionsEl = document.getElementById('options');
+                optionsEl.innerHTML = '';
+                
+                question.options.forEach(option => {
+                    const optionEl = document.createElement('div');
+                    optionEl.className = 'option';
+                    optionEl.textContent = option;
+                    optionEl.addEventListener('click', () => {
+                        document.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        optionEl.classList.add('selected');
+                        quizController.setSelectedOption(option);
+                        document.getElementById('feedback').style.display = 'none';
+                    });
+                    optionsEl.appendChild(optionEl);
+                });
+            },
+            
+            updateProgress(current, total) {
+                document.getElementById('progress').textContent = `Pergunta ${current}/${total}`;
+            },
+            
+            updateScore(score) {
+                document.getElementById('score').textContent = `Pontuação: ${score}`;
+            },
+            
+            showFeedback(isCorrect, correctAnswer) {
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+                feedbackEl.textContent = isCorrect 
+                    ? '✅ Resposta Correta!' 
+                    : `❌ Resposta Incorreta! A correta é: ${correctAnswer}`;
+                feedbackEl.style.display = 'block';
+            },
+            
+            showHint(hint) {
+                alert(`Dica: ${hint}`);
+            },
+            
+            showFinalResults(score, totalQuestions) {
+                const percentage = (score / (totalQuestions * 10)) * 100;
+                let performance;
+                
+                if (percentage >= 80) performance = "Ótimo! 🎉";
+                else if (percentage >= 60) performance = "Bom! 👍";
+                else performance = "Pode melhorar! 📚";
+                
+                if (confirm(`Quiz concluído!\n\nSua pontuação: ${score}/${totalQuestions * 10}\n\nDesempenho: ${performance}\n\nDeseja recomeçar?`)) {
+                    quizController.startQuiz();
+                }
+            }
+        };
+
+        class QuizController {
+            constructor() {
+                this.questions = questions;
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.selectedOption = null;
+            }
+
+            startQuiz() {
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.selectedOption = null;
+                this.loadQuestion();
+            }
+
+            loadQuestion() {
+                const question = this.questions[this.currentQuestionIndex];
+                QuizView.showQuestion(question);
+                QuizView.updateProgress(this.currentQuestionIndex + 1, this.questions.length);
+                QuizView.updateScore(this.score);
+            }
+
+            setSelectedOption(option) {
+                this.selectedOption = option;
+            }
+
+            checkAnswer() {
+                if (!this.selectedOption) {
+                    alert('Por favor, selecione uma opção!');
+                    return;
+                }
+
+                const question = this.questions[this.currentQuestionIndex];
+                const isCorrect = this.selectedOption === question.answer;
+
+                if (isCorrect) {
+                    this.score += 10;
+                }
+
+                QuizView.showFeedback(isCorrect, question.answer);
+
+                setTimeout(() => {
+                    this.currentQuestionIndex++;
+                    this.selectedOption = null;
+                    
+                    if (this.currentQuestionIndex < this.questions.length) {
+                        this.loadQuestion();
+                    } else {
+                        QuizView.showFinalResults(this.score, this.questions.length);
+                    }
+                }, 1500);
+            }
+
+            showHint() {
+                const question = this.questions[this.currentQuestionIndex];
+                QuizView.showHint(question.hint);
+            }
+        }
+
+        // ============== INICIALIZAÇÃO ==============
+        const quizController = new QuizController();
+        
+        document.getElementById('hintBtn').addEventListener('click', () => {
+            quizController.showHint();
+        });
+        
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            quizController.checkAnswer();
+        });
+        
+        // Inicia o quiz
+        quizController.startQuiz();
+    </script>
+</body>
+</html>
